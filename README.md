@@ -11,11 +11,13 @@ To use V4ScriptDebugger, you need to replace the QJSEngine in your project with 
 Next, instantiate a CV4ScriptDebuggerBackend, which must reside in a separate thread from where the CV4EngineExt exists. The Backend must be connected to the engine using CV4ScriptDebuggerBackend::attachTo. Connection between CJSScriptDebuggerFrontend and CV4ScriptDebuggerBackend is established by connecting CJSScriptDebuggerFrontend::sendRequest with CV4ScriptDebuggerBackend::processRequest, and CV4ScriptDebuggerBackend::sendResponse with CJSScriptDebuggerFrontend::processResponse. This connection can be achieved either through signals & slots or by serializing the QVariants used for communication (e.g., to JSON) and sending them over a socket or pipe between the debugger and the debuggee.
 Finally, create an instance of CJSScriptDebugger, connect it to the frontend using CJSScriptDebugger::attachTo, and display it using CJSScriptDebugger::show.
 
-### DebuggerDemo
-The Debugger Demo project provides a simple UI to test the debugger with different engines.
-
 ## V8ScriptDebugger
 V8ScriptDebugger is an old module that allows debugging of an older V8 engine using the Qt Script Debugger UI. It is included here for completeness, but it may not be compatible with modern versions of the V8 engine. If you require this functionality to work with the latest Google V8 Engine, please contact me (David Xanatos).
+
+## DebuggerDemo
+The Debugger Demo project provides a simple UI to test the debugger with different engines.
+
+![](DebuggerDemo.jpg)
 
 # Known Issues
 - When compiled with Qt6, the debugger console commands are not available, as they were internally implemented using the no longer available QScriptEngine. This functionality could be ported to use QJSEngine. If you require this feature, please reach out to me (David Xanatos).

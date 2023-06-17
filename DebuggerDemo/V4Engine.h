@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include <QJSEngine>
 
+#include "../V4ScriptDebugger/V4EngineExt.h"
 #include "../V4ScriptDebugger/V4ScriptDebuggerBackend.h"
 
 

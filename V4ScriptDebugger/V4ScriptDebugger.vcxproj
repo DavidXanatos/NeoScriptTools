@@ -169,6 +169,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseNew|x64'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugNew|x64'">
+    <Link>
+      <AdditionalDependencies>..\x64\DebugNew\NeoScriptTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <AdditionalDependencies>..\x64\Debug\NeoScriptTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseNew|x64'">
+    <Link>
+      <AdditionalDependencies>..\x64\ReleaseNew\NeoScriptTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Link>
+      <AdditionalDependencies>..\x64\Release\NeoScriptTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -287,6 +307,7 @@
     <ClInclude Include="V4DebugJobs.h" />
     <QtMoc Include="V4EngineExt.h" />
     <QtMoc Include="V4ScriptDebuggerBackend.h" />
+    <ClInclude Include="V4ScriptDebuggerApi.h" />
     <ClInclude Include="v4scriptdebugger_global.h" />
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +315,7 @@
     <ClCompile Include="V4DebugHandler.cpp" />
     <ClCompile Include="V4DebugJobs.cpp" />
     <ClCompile Include="V4EngineExt.cpp" />
+    <ClCompile Include="V4ScriptDebuggerApi.cpp" />
     <ClCompile Include="V4ScriptDebuggerBackend.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -41,12 +41,14 @@
 #include "V4DebugHandler.h"
 #include "V4DebugJobs.h"
 
+#include "V4ScriptDebuggerApi.h"
+
 class CV4ScriptDebuggerBackendPrivate : public QObjectPrivate
 {
 	Q_DECLARE_PUBLIC(CV4ScriptDebuggerBackend)
 public:
 
-	CV4EngineExt*			engine;
+	CV4EngineItf*			engine;
 	CV4DebugAgent*			debugger;
 	CV4DebugHandler*		handler;
 
@@ -141,8 +143,8 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 	// Note: The debug agant must be in the same thread as the engine 
 	//	so we follow it whenever needed
 	//
-	if (d->debugger->thread() != d->engine->thread()) {
-		d->debugger->moveToThread(d->engine->thread());
+	if (d->debugger->thread() != d->engine->self()->thread()) {
+		d->debugger->moveToThread(d->engine->self()->thread());
 		qDebug() << "V4DebugAgent moved to engine's thread";
 	}
 
@@ -196,7 +198,7 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 		else
 		{
 			// Note: this mode is not blocking
-			QMetaObject::invokeMethod(d->engine, "evaluateScript", Qt::QueuedConnection, Q_ARG(QString, program), Q_ARG(QString, fileName), Q_ARG(int, lineNumber));
+			QMetaObject::invokeMethod(d->engine->self(), "evaluateScript", Qt::QueuedConnection, Q_ARG(QString, program), Q_ARG(QString, fileName), Q_ARG(int, lineNumber));
 		}
 		Response["async"] = true;
 	}
@@ -632,17 +634,17 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 	return Response;
 }
 
-void CV4ScriptDebuggerBackend::attachTo(CV4EngineExt* engine)
+void CV4ScriptDebuggerBackend::attachTo(class CV4EngineItf* engine)
 {
 	Q_D(CV4ScriptDebuggerBackend);
 
 	d->engine = engine;
-	d->debugger = new CV4DebugAgent(engine->handle());
-	d->handler = new CV4DebugHandler(engine->handle());
-	connect(d->debugger, &CV4DebugAgent::debuggerPaused, this, &CV4ScriptDebuggerBackend::debuggerPaused);
-	connect(d->engine, &CV4EngineExt::evaluateFinished, this, &CV4ScriptDebuggerBackend::evaluateFinished);
-	connect(d->engine, &CV4EngineExt::printTrace, this, &CV4ScriptDebuggerBackend::printTrace);
-	connect(d->engine, &CV4EngineExt::invokeDebugger, this, &CV4ScriptDebuggerBackend::invokeDebugger, Qt::BlockingQueuedConnection);
+	d->debugger = new CV4DebugAgent(engine->self()->handle());
+	d->handler = new CV4DebugHandler(engine->self()->handle());
+	connect(d->debugger, SIGNAL(debuggerPaused(CV4DebugAgent*, int, const QString&, int)), this, SLOT(debuggerPaused(CV4DebugAgent*, int, const QString&, int)));
+	connect(d->engine->self(), SIGNAL(evaluateFinished(const QJSValue&)), this, SLOT(evaluateFinished(const QJSValue&)));
+	connect(d->engine->self(), SIGNAL(printTrace(const QString&)), this, SLOT(printTrace(const QString&)));
+	connect(d->engine->self(), SIGNAL(invokeDebugger()), this, SLOT(invokeDebugger()), Qt::BlockingQueuedConnection);
 	d->debugger->setBreakOnException();
 }
 

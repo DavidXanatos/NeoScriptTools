@@ -32,6 +32,9 @@
     <ClInclude Include="V4DebugJobs.h">
       <Filter>V4Debugging</Filter>
     </ClInclude>
+    <ClInclude Include="V4ScriptDebuggerApi.h">
+      <Filter>V4Debugging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="V4ScriptDebuggerBackend.cpp">
@@ -47,6 +50,9 @@
       <Filter>V4Debugging</Filter>
     </ClCompile>
     <ClCompile Include="V4EngineExt.cpp">
+      <Filter>V4Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="V4ScriptDebuggerApi.cpp">
       <Filter>V4Debugging</Filter>
     </ClCompile>
   </ItemGroup>

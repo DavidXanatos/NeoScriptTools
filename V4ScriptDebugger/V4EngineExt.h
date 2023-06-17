@@ -28,15 +28,17 @@
 #include <QObject>
 #include <QVariant>
 
-#include <QJSEngine>
+#include "../V4ScriptDebugger/V4ScriptDebuggerApi.h"
 
 
-class V4SCRIPTDEBUGGER_EXPORT CV4EngineExt : public QJSEngine
+class V4SCRIPTDEBUGGER_EXPORT CV4EngineExt : public QJSEngine, public CV4EngineItf
 {
     Q_OBJECT
 public:
     CV4EngineExt(QObject* parent = NULL);
     ~CV4EngineExt();
+
+    QJSEngine* self() { return this; }
 
     Q_INVOKABLE QJSValue evaluateScript(const QString& program, const QString& fileName, int lineNumber = 1);
 

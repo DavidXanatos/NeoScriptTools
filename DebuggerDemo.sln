@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeoScriptTools", "NeoScriptTools\NeoScriptTools.vcxproj", "{5A1761AD-A0CA-4129-868D-9A47C83C2C51}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "V4ScriptDebugger", "V4ScriptDebugger\V4ScriptDebugger.vcxproj", "{41377AE1-B22E-430F-98C9-8692B7B822E8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5A1761AD-A0CA-4129-868D-9A47C83C2C51} = {5A1761AD-A0CA-4129-868D-9A47C83C2C51}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DebuggerDemo", "DebuggerDemo\DebuggerDemo.vcxproj", "{5DADCB60-DC25-4BE8-B99F-A79260164E91}"
 	ProjectSection(ProjectDependencies) = postProject

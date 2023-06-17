@@ -28,8 +28,6 @@
 #include <QObject>
 #include <QVariant>
 
-#include "V4EngineExt.h"
-
 #include <QJSEngine>
 
 class CV4DebugAgent;
@@ -45,7 +43,7 @@ public:
 	QVariant handleRequest(const QVariant& var);
 
 	QVariantMap onCommand(int id, const QVariantMap& Command);
-	void attachTo(CV4EngineExt* engine);
+	void attachTo(class CV4EngineItf* engine);
 //  void detach();
 
 signals:

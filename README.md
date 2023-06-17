@@ -4,7 +4,7 @@ NeoScriptTools is a Qt6-compatible fork of Qt4 ScriptTools. It was initially dev
 ## V4ScriptDebugger
 V4ScriptDebugger is a new module that allows you to use the old Qt Script Debugger UI for debugging the new Qt6/Qt5 QJSEngine (internally called V4).
 
-To use V4ScriptDebugger in any commercial project, you are required to obtain an appropriate business use license. Please contact me (David Xanatos) via email, which is available in my Github profile, to purchase a license.
+__To use V4ScriptDebugger in any commercial project, you are required to obtain an appropriate business use license.__ Please contact me (David Xanatos) via email, which is available in my Github profile, to purchase a license.
 
 ### Usage
 To use V4ScriptDebugger, you need to replace the QJSEngine in your project with CV4EngineExt and use the evaluateScript function instead of evaluate.

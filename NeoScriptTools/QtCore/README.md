@@ -1,0 +1,1 @@
+This filder is needed to compile the script tools with Qt 6

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/DebuggerDemo">
+        <file>Debug.png</file>
+        <file>Run.png</file>
+    </qresource>
+</RCC>

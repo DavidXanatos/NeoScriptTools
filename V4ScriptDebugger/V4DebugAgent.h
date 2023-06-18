@@ -61,7 +61,7 @@ class CV4DebugAgent : public QV4::Debugging::Debugger
     Q_OBJECT
 
 public:
-    CV4DebugAgent(QV4::ExecutionEngine* engine, QObject* parent = nullptr);
+    CV4DebugAgent(QV4::ExecutionEngine* engine);
 
     QV4::ExecutionEngine* engine() const { return m_engine; }
 

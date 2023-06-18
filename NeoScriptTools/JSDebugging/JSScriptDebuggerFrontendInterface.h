@@ -43,7 +43,7 @@ public:
 	virtual ~CJSScriptDebuggerFrontendInterface();
 
 	virtual void attachTo(QScriptDebugger* debugger);
-	virtual void detach() {}
+	virtual void detach() = 0;
 
 protected:
 	friend class QScriptDebuggerFrontendImpl;

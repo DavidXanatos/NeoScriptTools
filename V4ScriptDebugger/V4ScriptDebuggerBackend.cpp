@@ -49,7 +49,7 @@ class CV4ScriptDebuggerBackendPrivate : public QObjectPrivate
 public:
 
 	CV4EngineItf*			engine;
-	CV4DebugAgent*			debugger;
+	QPointer<CV4DebugAgent>	debugger;
 	CV4DebugHandler*		handler;
 
 	QVariantList			pendingEvents;
@@ -92,18 +92,22 @@ QVariant CV4ScriptDebuggerBackend::handleRequest(const QVariant& var)
 {
 	Q_D(CV4ScriptDebuggerBackend);
 
-	if(!var.isValid())
-	{
-		QVariantMap out;
-		if (!d->pendingEvents.isEmpty()) {
-			//qDebug() << "event: " << m_pendingEvents.first().toMap()["type"].toString();
-			out["Event"] = d->pendingEvents.takeFirst();
-		}
-		return out;
-	}
-
 	QVariantMap in = var.toMap();
-	if (in.contains("Command"))
+	if (in.contains("Control"))
+	{
+		if (in["Control"] == "PullEvent")
+		{
+			QVariantMap out;
+			if (!d->pendingEvents.isEmpty())
+				out["Event"] = d->pendingEvents.takeFirst();
+			return out;
+		}
+		else if (in["Control"] == "Detach")
+		{
+			detach();
+		}
+	}
+	else if (in.contains("Command"))
 	{
 		qint32 id = in["ID"].toUInt();
 		
@@ -130,6 +134,8 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 {
 	Q_D(CV4ScriptDebuggerBackend);
 
+	QVariantMap Response;
+
 	QString typeStr = Command["type"].toString();
 	QVariantMap Attributes = Command["attributes"].toMap();
 
@@ -138,6 +144,11 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 	QByteArray Temp = doc.toJson();
 	//qDebug() << "cmd: " << typeStr;
 #endif
+
+	if (!d->debugger) {
+		Response["error"] = "DetachedError";
+		return Response;
+	}
 
 	//
 	// Note: The debug agant must be in the same thread as the engine 
@@ -148,7 +159,7 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 		qDebug() << "V4DebugAgent moved to engine's thread";
 	}
 
-	QVariantMap Response;
+	
 	if (typeStr == "Interrupt")
 	{
 		d->debugger->pause();
@@ -640,12 +651,39 @@ void CV4ScriptDebuggerBackend::attachTo(class CV4EngineItf* engine)
 
 	d->engine = engine;
 	d->debugger = new CV4DebugAgent(engine->self()->handle());
-	d->handler = new CV4DebugHandler(engine->self()->handle());
+	d->handler = new CV4DebugHandler(engine->self()->handle(), this);
 	connect(d->debugger, SIGNAL(debuggerPaused(CV4DebugAgent*, int, const QString&, int)), this, SLOT(debuggerPaused(CV4DebugAgent*, int, const QString&, int)));
 	connect(d->engine->self(), SIGNAL(evaluateFinished(const QJSValue&)), this, SLOT(evaluateFinished(const QJSValue&)));
 	connect(d->engine->self(), SIGNAL(printTrace(const QString&)), this, SLOT(printTrace(const QString&)));
 	connect(d->engine->self(), SIGNAL(invokeDebugger()), this, SLOT(invokeDebugger()), Qt::BlockingQueuedConnection);
 	d->debugger->setBreakOnException();
+}
+
+void CV4ScriptDebuggerBackend::pause()
+{
+	Q_D(CV4ScriptDebuggerBackend);
+
+	d->debugger->pause();
+}
+
+void CV4ScriptDebuggerBackend::detach()
+{
+	Q_D(CV4ScriptDebuggerBackend);
+
+	if (!d->debugger)
+		return;
+
+	d->debugger->resume(); // clear stepping
+	d->debugger->setBreakOnException(false); // clear break on exception
+	d->debugger->deleteAllBreakpoints(); // clear breakpoints
+	d->debugger->resume(); // final resume
+	d->debugger = NULL; // the engine will dispose of the debugger
+
+	delete d->handler;
+	d->handler = NULL;
+
+	disconnect(this);
+	d->engine = NULL;
 }
 
 void CV4ScriptDebuggerBackend::debuggerPaused(CV4DebugAgent* debugger, int reason, const QString& fileName, int lineNumber)

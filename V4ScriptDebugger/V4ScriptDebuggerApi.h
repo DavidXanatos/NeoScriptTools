@@ -58,12 +58,12 @@ public:
 extern "C" {
     V4SCRIPTDEBUGGER_EXPORT QObject* newV4ScriptDebuggerBackend(CV4EngineItf* engine);
     V4SCRIPTDEBUGGER_EXPORT QObject* newJSScriptDebuggerFrontend();
-    V4SCRIPTDEBUGGER_EXPORT QMainWindow* newJSScriptDebugger(QObject* frontend);
+    V4SCRIPTDEBUGGER_EXPORT QMainWindow* newJSScriptDebugger(QObject* frontend, QWidget *parent = nullptr, Qt::WindowFlags flags = {});
 }
 
 typedef QObject* (*pNewV4ScriptDebuggerBackend)(CV4EngineItf* engine);
 typedef QObject* (*pNewJSScriptDebuggerFrontend)();
-typedef QMainWindow* (*pNewJSScriptDebugger)(QObject* frontend);
+typedef QMainWindow* (*pNewJSScriptDebugger)(QObject* frontend, QWidget *parent, Qt::WindowFlags flags);
 
 __forceinline QObject* newV4ScriptDebuggerBackendDynamic(CV4EngineItf* engine)
 {
@@ -81,11 +81,11 @@ __forceinline QObject* newJSScriptDebuggerFrontendDynamic()
     return NULL;
 }
 
-__forceinline QMainWindow* newJSScriptDebuggerDynamic(QObject* frontend)
+__forceinline QMainWindow* newJSScriptDebuggerDynamic(QObject* frontend, QWidget *parent = nullptr, Qt::WindowFlags flags = {})
 {
     pNewJSScriptDebugger myNewJSScriptDebugger = (pNewJSScriptDebugger)QLibrary::resolve("V4ScriptDebugger", "newJSScriptDebugger");
     if (myNewJSScriptDebugger)
-        return myNewJSScriptDebugger(frontend);
+        return myNewJSScriptDebugger(frontend, parent, flags);
     return NULL;
 }
 

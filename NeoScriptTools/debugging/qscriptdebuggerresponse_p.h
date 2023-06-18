@@ -86,6 +86,7 @@ public:
         InvalidArgumentIndex,
         InvalidScriptID,
         InvalidBreakpointID,
+        DetachedError,
         UserError = 1000,
         MaxUserError = 32767
     };

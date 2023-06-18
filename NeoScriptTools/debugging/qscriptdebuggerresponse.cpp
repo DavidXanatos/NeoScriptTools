@@ -417,13 +417,20 @@ void QScriptDebuggerResponse::fromVariant(const QVariant& var)
 	QVariantMap in = var.toMap();
     QScriptDebuggerResponsePrivate *d = d_ptr.data();
 
-	Error error = MaxUserError;
-	if(in["error"] == "InvalidContextIndex") error = InvalidContextIndex;
-	else if(in["error"] == "InvalidArgumentIndex") error = InvalidArgumentIndex;
-	else if(in["error"] == "InvalidScriptID") error = InvalidScriptID;
-	else if(in["error"] == "InvalidBreakpointID") error = InvalidBreakpointID;
-	else if(in["error"] == "UserError") error = UserError;
-	else error = NoError;
+	Error error = NoError;
+	QVariant err = in["error"];
+	if (err.isValid()) {
+		if (err.type() == QVariant::String) {
+			if (err == "InvalidContextIndex") error = InvalidContextIndex;
+			else if (err == "InvalidArgumentIndex") error = InvalidArgumentIndex;
+			else if (err == "InvalidScriptID") error = InvalidScriptID;
+			else if (err == "InvalidBreakpointID") error = InvalidBreakpointID;
+			else if (err == "DetachedError") error = DetachedError;
+			else if (err == "UserError") error = UserError;
+			else error = MaxUserError;
+		} else
+			err = err.toInt();
+	}
     d->error = error;
 
     d->result = in["result"];
@@ -442,8 +449,11 @@ QVariant QScriptDebuggerResponse::toVariant() const
 	case InvalidArgumentIndex: out["error"] = "InvalidArgumentIndex"; break;
 	case InvalidScriptID: out["error"] = "InvalidScriptID"; break;
 	case InvalidBreakpointID: out["error"] = "InvalidBreakpointID"; break;
+	case DetachedError: out["error"] = "DetachedError"; break;
 	case UserError: out["error"] = "UserError"; break;
-	default: Q_ASSERT(0);
+	default: 
+		Q_ASSERT(d->error > UserError);
+		out["error"] = (int)d->error; break;
 	}
 
     out["result"] = d->result;

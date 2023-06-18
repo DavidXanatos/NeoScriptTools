@@ -56,6 +56,7 @@ public slots:
 
 protected:
 	void processCommand(int id, const QVariantMap &command);
+    void detach();
 
 	void timerEvent(QTimerEvent *e);
 

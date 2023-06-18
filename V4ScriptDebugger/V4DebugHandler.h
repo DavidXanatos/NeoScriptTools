@@ -96,7 +96,7 @@ struct SV4ValueIterator
 // CV4DebugHandler
 //
 
-class CV4DebugHandler : QObject
+class CV4DebugHandler : public QObject
 {
     Q_OBJECT
 

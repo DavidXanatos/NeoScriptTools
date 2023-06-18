@@ -68,10 +68,8 @@ QVariantMap SV4Breakpoint::toVariant() const
 // CV4DebugAgent
 //
 
-CV4DebugAgent::CV4DebugAgent(QV4::ExecutionEngine* engine, QObject* parent) 
+CV4DebugAgent::CV4DebugAgent(QV4::ExecutionEngine* engine) 
 {
-	if (parent) setParent(parent);
-
 	m_engine = engine;
 	m_breakOnException = false;
 	m_pauseRequested = DontBreak;

@@ -37,9 +37,9 @@ QObject* newJSScriptDebuggerFrontend()
 	return new CJSScriptDebuggerFrontend();
 }
 
-QMainWindow* newJSScriptDebugger(QObject* frontend)
+QMainWindow* newJSScriptDebugger(QObject* frontend, QWidget *parent, Qt::WindowFlags flags)
 {
-	CJSScriptDebugger* pDebugger = new CJSScriptDebugger();
+	CJSScriptDebugger* pDebugger = new CJSScriptDebugger(parent, flags);
 	pDebugger->attachTo((CJSScriptDebuggerFrontend*)frontend);
 	return pDebugger;
 }

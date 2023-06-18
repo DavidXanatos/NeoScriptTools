@@ -44,12 +44,13 @@ public:
 
 	QVariantMap onCommand(int id, const QVariantMap& Command);
 	void attachTo(class CV4EngineItf* engine);
-//  void detach();
 
 signals:
 	void sendResponse(const QVariant& var);
 
 public slots:
+	void pause();
+	void detach();
 	void processRequest(const QVariant& var);
 
 private slots:

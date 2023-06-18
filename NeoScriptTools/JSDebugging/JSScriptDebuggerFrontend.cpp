@@ -72,8 +72,9 @@ void CJSScriptDebuggerFrontend::timerEvent(QTimerEvent *e)
 		return;
     }
 
-	// Pull Events
-	emit sendRequest(QVariant());
+	QVariantMap out;
+	out["Control"] = "PullEvent";
+    emit sendRequest(out);
 }
 
 void CJSScriptDebuggerFrontend::processCommand(int id, const QVariantMap &command)
@@ -83,6 +84,13 @@ void CJSScriptDebuggerFrontend::processCommand(int id, const QVariantMap &comman
 	QVariantMap out;
 	out["ID"] = id;
 	out["Command"] = command;
+    emit sendRequest(out);
+}
+
+void CJSScriptDebuggerFrontend::detach()
+{
+	QVariantMap out;
+	out["Control"] = "Detach";
     emit sendRequest(out);
 }
 

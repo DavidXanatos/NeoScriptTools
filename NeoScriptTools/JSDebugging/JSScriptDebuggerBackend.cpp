@@ -76,16 +76,22 @@ QVariant CJSScriptDebuggerBackend::handleRequest(const QVariant& var)
 {
 	Q_D(CJSScriptDebuggerBackend);
 
-	if(!var.isValid())
-	{
-		QVariantMap out;
-		if(!d->pendingEvents.isEmpty())
-			out["Event"] = d->pendingEvents.takeFirst();
-		return out;
-	}
-
 	QVariantMap in = var.toMap();
-	if (in.contains("Command"))
+	if (in.contains("Control"))
+	{
+		if (in["Control"] == "PullEvent")
+		{
+			QVariantMap out;
+			if (!d->pendingEvents.isEmpty())
+				out["Event"] = d->pendingEvents.takeFirst();
+			return out;
+		}
+		else if (in["Control"] == "Detach")
+		{
+			detach();
+		}
+	}
+	else if (in.contains("Command"))
 	{
 		qint32 id = in["ID"].toUInt();
 		QScriptDebuggerCommand command(QScriptDebuggerCommand::None);

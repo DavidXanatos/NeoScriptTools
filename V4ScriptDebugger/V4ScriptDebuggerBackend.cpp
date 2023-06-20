@@ -432,10 +432,6 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 
 		QVariantList Result;
 		foreach(const SV4Scope& scope, d->debugger->getScopes(frameNr)) {
-#ifndef _DEBUG
-			if (scope.type != 1)
-				continue; // not CallContext
-#endif
 
 			UV4Handle Scope = { 0 };
 			Scope.type = UV4Handle::eScope;

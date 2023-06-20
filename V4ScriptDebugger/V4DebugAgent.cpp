@@ -178,18 +178,6 @@ QV4::Heap::ExecutionContext* CV4DebugAgent::findScope(QV4::Heap::ExecutionContex
 	return ctx;
 }
 
-int scopeTypeToInt(QV4::Heap::ExecutionContext::ContextType scopeType)
-{
-	switch (scopeType) {
-	default:
-	case QV4::Heap::ExecutionContext::Type_GlobalContext:	return 0;
-	case QV4::Heap::ExecutionContext::Type_WithContext:		return 2;
-	case QV4::Heap::ExecutionContext::Type_QmlContext:		return 3;
-	case QV4::Heap::ExecutionContext::Type_BlockContext:	return 4;
-	case QV4::Heap::ExecutionContext::Type_CallContext:		return 1;
-	}
-}
-
 QVector<SV4Scope> CV4DebugAgent::getScopes(int frame)
 {
 	QVector<SV4Scope> scopes;
@@ -197,8 +185,18 @@ QVector<SV4Scope> CV4DebugAgent::getScopes(int frame)
 		return scopes;
 	
 	QV4::Heap::ExecutionContext* ec = findFrame(m_engine, frame)->context()->d();
-	for (int i=0; ec; ec = ec->outer, i++)
-		scopes.append(SV4Scope{ i, scopeTypeToInt(QV4::Heap::ExecutionContext::ContextType(ec->type)) });
+	for (int i = 0; ec; ec = ec->outer, i++) {
+		QString type;
+		switch (ec->type) {
+		default:												type = "Unknown"; break;
+		case QV4::Heap::ExecutionContext::Type_GlobalContext:	type = "GlobalContext"; break;
+		case QV4::Heap::ExecutionContext::Type_WithContext:		type = "WithContext"; break;
+		case QV4::Heap::ExecutionContext::Type_QmlContext:		type = "QmlContext"; break;
+		case QV4::Heap::ExecutionContext::Type_BlockContext:	type = "BlockContext"; break;
+		case QV4::Heap::ExecutionContext::Type_CallContext:		type = "CallContext"; break;
+		}
+		scopes.append(SV4Scope{ i, type });
+	}
 	return scopes;
 }
 

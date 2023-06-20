@@ -53,7 +53,7 @@ struct SV4Breakpoint {
 
 struct SV4Scope {
     int index;
-    int type;
+    QString type;
 };
 
 class CV4DebugAgent : public QV4::Debugging::Debugger

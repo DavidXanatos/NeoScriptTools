@@ -57,7 +57,7 @@ void CV4GetPropsJob::run()
     else if (handle.type == UV4Handle::eScope)
     {
         QV4::Scoped<QV4::ExecutionContext> ctxt(scope, CV4DebugAgent::findScope(CV4DebugAgent::findContext(handler->engine(), handle.frame), handle.scope));
-        if (ctxt && ctxt->d()->type == QV4::Heap::ExecutionContext::Type_CallContext) {
+        if (ctxt) {
             QV4::ScopedValue v(scope);
             QV4::Heap::InternalClass* ic = ctxt->internalClass();
             for (uint i = 0; i < ic->size; ++i) {

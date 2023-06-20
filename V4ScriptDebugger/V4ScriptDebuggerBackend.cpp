@@ -430,6 +430,8 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 	{
 		int frameNr = Attributes["contextIndex"].toInt();
 
+		QMap<QString, int> NameCtr;
+
 		QVariantList Result;
 		foreach(const SV4Scope& scope, d->debugger->getScopes(frameNr)) {
 
@@ -438,12 +440,17 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 			Scope.frame = frameNr;
 			Scope.scope = scope.index;
 
+			QString Name = scope.type;
+			int i = NameCtr[Name]++;
+			if (i > 0)
+				Name += QString(" (%1)").arg(i);
+
 			QVariantMap Value;
 			Value["type"] = "ObjectValue";
 			Value["value"] = Scope.value;
 
 			QVariantMap Property;
-			Property["name"] = scope.type;
+			Property["name"] = Name;
 			Property["value"] = Value;
 			Property["flags"] = 0;
 

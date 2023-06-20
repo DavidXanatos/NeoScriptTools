@@ -442,11 +442,17 @@ QVariantMap CV4ScriptDebuggerBackend::onCommand(int id, const QVariantMap& Comma
 			Value["type"] = "ObjectValue";
 			Value["value"] = Scope.value;
 
-			Result.append(Value);
+			QVariantMap Property;
+			Property["name"] = scope.type;
+			Property["value"] = Value;
+			Property["flags"] = 0;
+
+			Result.append(Property);
 		}
 
 		Response["result"] = Result;
-		Response["type"] = "QScriptDebuggerValueList";
+		//Response["type"] = "QScriptDebuggerValueList";
+		Response["type"] = "QScriptDebuggerValuePropertyList";
 	}
 	
 	else if (typeStr == "GetActivationObject") // used only in console commands: .info locals

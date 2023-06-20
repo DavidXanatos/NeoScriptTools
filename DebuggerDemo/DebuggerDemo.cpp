@@ -224,7 +224,7 @@ void DebuggerDemo::OnRunQS()
 		connect(pEngine, SIGNAL(EvalFinished(const QVariant&)), this, SLOT(OnEvalFinished(const QVariant&)));
 	}
 
-	m_pQSThread->RunScript(ui.txtProgram->toPlainText(), "Demo Script");
+	m_pQSThread->RunScript(ui.txtProgram->toPlainText().replace("let ", "var "), "Demo Script");
 #endif
 }
 

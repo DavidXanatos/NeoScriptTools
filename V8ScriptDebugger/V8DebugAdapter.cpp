@@ -997,6 +997,7 @@ void CV8DebugAdapter::onMessage(const QByteArray& arrJson)
 			QVariantMap Response;
 
 			QVariantList Result;
+			int i = 0;
 			foreach(const QVariant& vScope, Scopes)
 			{
 				QVariantMap Object = vScope.toMap()["object"].toMap();
@@ -1005,7 +1006,17 @@ void CV8DebugAdapter::onMessage(const QByteArray& arrJson)
 				Value["type"] = "ObjectValue";
 				Value["value"] = Object["ref"].toInt();
 
-				Result.append(Value);
+				QString name = QString::fromLatin1("Scope");
+                if (i > 0)
+                    name.append(QString::fromLatin1(" (%0)").arg(i));
+				i++;
+
+				QVariantMap Property;
+				Property["name"] = name;
+				Property["value"] = Value;
+				Property["flags"] = 0;
+
+				Result.append(Property);
 			}
 			Response["result"] = Result;
 			Response["type"] = "QScriptDebuggerValueList";

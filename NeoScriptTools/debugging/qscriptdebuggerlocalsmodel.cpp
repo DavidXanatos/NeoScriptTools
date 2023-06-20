@@ -509,13 +509,16 @@ public:
         QScriptDebuggerLocalsModelPrivate *model_d = QScriptDebuggerLocalsModelPrivate::get(m_model);
         switch (m_state) {
         case 0: {
-            QScriptDebuggerValueList scopeChain = response.resultAsScriptValueList();
+            //QScriptDebuggerValueList scopeChain = response.resultAsScriptValueList();
+            QScriptDebuggerValuePropertyList scopeChain = response.resultAsScriptValuePropertyList();
             for (int i = 0; i < scopeChain.size(); ++i) {
-                const QScriptDebuggerValue &scopeObject = scopeChain.at(i);
-                QString name = QString::fromLatin1("Scope");
-                if (i > 0)
-                    name.append(QString::fromLatin1(" (%0)").arg(i));
-                QModelIndex index = model_d->addTopLevelObject(name, scopeObject);
+                //const QScriptDebuggerValue &scopeObject = scopeChain.at(i);
+                //QString name = QString::fromLatin1("Scope");
+                //if (i > 0)
+                //    name.append(QString::fromLatin1(" (%0)").arg(i));
+                //QModelIndex index = model_d->addTopLevelObject(name, scopeObject);
+                const QScriptDebuggerValueProperty &scopeObject = scopeChain.at(i);
+                QModelIndex index = model_d->addTopLevelObject(scopeObject.name(), scopeObject.value());
                 if (i == 0)
                     model_d->emitScopeObjectAvailable(index);
             }
@@ -580,7 +583,8 @@ public:
         QScriptDebuggerCommandSchedulerFrontend frontend(commandScheduler(), this);
         switch (m_state) {
         case 0: {
-            QScriptDebuggerValueList scopeChain = response.resultAsScriptValueList();
+            //QScriptDebuggerValueList scopeChain = response.resultAsScriptValueList();
+            QScriptDebuggerValuePropertyList scopeChain = response.resultAsScriptValuePropertyList();
             m_topLevelObjects << scopeChain;
             frontend.scheduleGetThisObject(m_frameIndex);
             ++m_state;
@@ -588,11 +592,14 @@ public:
         case 1: {
             QScriptDebuggerLocalsModelPrivate *model_d = QScriptDebuggerLocalsModelPrivate::get(m_model);
             QScriptDebuggerValue thisObject = response.resultAsScriptValue();
-            m_topLevelObjects.append(thisObject);
+            //m_topLevelObjects.append(thisObject);
+            m_topLevelObjects.append(QScriptDebuggerValueProperty("this", thisObject, "", 0));
             bool equal = (m_topLevelObjects.size() == model_d->invisibleRootNode->children.size());
             for (int i = 0; equal && (i < m_topLevelObjects.size()); ++i) {
-                const QScriptDebuggerValue &object = m_topLevelObjects.at(i);
-                equal = (object == model_d->invisibleRootNode->children.at(i)->property.value());
+                //const QScriptDebuggerValue &object = m_topLevelObjects.at(i);
+                //equal = (object == model_d->invisibleRootNode->children.at(i)->property.value());
+                const QScriptDebuggerValueProperty &object = m_topLevelObjects.at(i);
+                equal = (object.value() == model_d->invisibleRootNode->children.at(i)->property.value());
             }
             if (!equal) {
                 // the scope chain and/or this-object changed, so invalidate the model.
@@ -600,16 +607,18 @@ public:
                 // exactly which objects were popped/pushed
                 model_d->removeTopLevelNodes();
                 for (int j = 0; j < m_topLevelObjects.size(); ++j) {
-                    const QScriptDebuggerValue &object = m_topLevelObjects.at(j);
-                    QString name;
-                    if (j == m_topLevelObjects.size()-1) {
-                        name = QString::fromLatin1("this");
-                    } else {
-                        name = QString::fromLatin1("Scope");
-                        if (j > 0)
-                            name.append(QString::fromLatin1(" (%0)").arg(j));
-                    }
-                    QModelIndex index = model_d->addTopLevelObject(name, object);
+                    //const QScriptDebuggerValue &object = m_topLevelObjects.at(j);
+                    //QString name;
+                    //if (j == m_topLevelObjects.size()-1) {
+                    //    name = QString::fromLatin1("this");
+                    //} else {
+                    //    name = QString::fromLatin1("Scope");
+                    //    if (j > 0)
+                    //        name.append(QString::fromLatin1(" (%0)").arg(j));
+                    //}
+                    //QModelIndex index = model_d->addTopLevelObject(name, object);
+                    const QScriptDebuggerValueProperty &object = m_topLevelObjects.at(j);
+                    QModelIndex index = model_d->addTopLevelObject(object.name(), object.value());
                     if (j == 0)
                         model_d->emitScopeObjectAvailable(index);
                 }
@@ -625,7 +634,8 @@ private:
     QPointer<QScriptDebuggerLocalsModel> m_model;
     int m_frameIndex;
     int m_state;
-    QScriptDebuggerValueList m_topLevelObjects;
+    //QScriptDebuggerValueList m_topLevelObjects;
+    QScriptDebuggerValuePropertyList m_topLevelObjects;
 };
 
 } // namespace

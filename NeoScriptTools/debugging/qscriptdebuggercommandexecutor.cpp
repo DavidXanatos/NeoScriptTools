@@ -330,10 +330,15 @@ QScriptDebuggerResponse QScriptDebuggerCommandExecutor::execute(
     case QScriptDebuggerCommand::GetScopeChain: {
         QScriptContext *ctx = backend->context(command.contextIndex());
         if (ctx) {
-            QScriptDebuggerValueList dest;
+            //QScriptDebuggerValueList dest;
+            QScriptDebuggerValuePropertyList dest;
             QScriptValueList src = ctx->scopeChain();
             for (int i = 0; i < src.size(); ++i) {
-				QScriptDebuggerValue value = toDebuggerValue(src.at(i));
+				//QScriptDebuggerValue value = toDebuggerValue(src.at(i));
+                QString name = QString::fromLatin1("Scope");
+                if (i > 0)
+                    name.append(QString::fromLatin1(" (%0)").arg(i));
+                QScriptDebuggerValueProperty value(name, toDebuggerValue(src.at(i)), "", 0);
                 dest.append(value);
 			}
             response.setResult(dest);

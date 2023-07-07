@@ -113,6 +113,8 @@ QV4::ReturnedValue debuggerCall(const QV4::FunctionObject* b, const QV4::Value* 
 
 QV4::ReturnedValue evalCall(const QV4::FunctionObject* b, const QV4::Value* v, const QV4::Value* argv, int argc)
 {
+    // Note: this is not ideal could be improved...
+
     QV4::Scope scope(b);
     QV4::ExecutionEngine* v4 = scope.engine;
 
@@ -125,5 +127,17 @@ QV4::ReturnedValue evalCall(const QV4::FunctionObject* b, const QV4::Value* v, c
 
     QMutexLocker locker(&g_engineMutex);
     QJSValue ret = g_engineMap.value(v4)->evaluateScript(scode->toQStringNoThrow(), "eval code");
-    return g_engineMap.value(v4)->fromScriptValue<QV4::ReturnedValue>(ret);
+    
+    if (ret.isUndefined())
+        return QV4::Encode::undefined();
+    else if (ret.isNull())
+        return QV4::Encode::null();
+    else if (ret.isBool())
+        return QV4::Encode(ret.toBool());
+    else if (ret.isNumber())
+        return QV4::Encode(ret.toNumber());
+    else if (ret.isString())
+        return v4->newString(ret.toString())->asReturnedValue();
+
+    return QV4::Encode::undefined();
 }

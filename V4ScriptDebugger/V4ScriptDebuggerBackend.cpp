@@ -770,7 +770,8 @@ void CV4ScriptDebuggerBackend::invokeDebugger()
 {
 	Q_D(CV4ScriptDebuggerBackend);
 
-	d->debugger->pause(CV4DebugAgent::DebuggerInvoked);
+	if(d->debugger)
+		d->debugger->pause(CV4DebugAgent::DebuggerInvoked);
 }
 
 QVariantMap CV4ScriptDebuggerBackend::scriptDelta()

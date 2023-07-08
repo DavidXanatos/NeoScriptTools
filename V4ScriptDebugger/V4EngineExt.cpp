@@ -29,6 +29,8 @@
 #include <private/qv4script_p.h>
 #include <private/qqmlbuiltinfunctions_p.h>
 #include <private/qqmldebugservice_p.h>
+#include <private/qv4qobjectwrapper_p.h>
+#include <private/qjsvalue_p.h>
 
 static QMutex g_engineMutex;
 static QMap<void*, CV4EngineExt*> g_engineMap;
@@ -113,8 +115,6 @@ QV4::ReturnedValue debuggerCall(const QV4::FunctionObject* b, const QV4::Value* 
 
 QV4::ReturnedValue evalCall(const QV4::FunctionObject* b, const QV4::Value* v, const QV4::Value* argv, int argc)
 {
-    // Note: this is not ideal could be improved...
-
     QV4::Scope scope(b);
     QV4::ExecutionEngine* v4 = scope.engine;
 
@@ -127,17 +127,16 @@ QV4::ReturnedValue evalCall(const QV4::FunctionObject* b, const QV4::Value* v, c
 
     QMutexLocker locker(&g_engineMutex);
     QJSValue ret = g_engineMap.value(v4)->evaluateScript(scode->toQStringNoThrow(), "eval code");
-    
-    if (ret.isUndefined())
+    if (ret.isError()) {
+        v4->throwError(QJSValuePrivate::asReturnedValue(&ret));
         return QV4::Encode::undefined();
-    else if (ret.isNull())
-        return QV4::Encode::null();
-    else if (ret.isBool())
-        return QV4::Encode(ret.toBool());
-    else if (ret.isNumber())
-        return QV4::Encode(ret.toNumber());
-    else if (ret.isString())
-        return v4->newString(ret.toString())->asReturnedValue();
-
-    return QV4::Encode::undefined();
+    } else {
+        QV4::ScopedValue rv(scope, scope.engine->fromVariant(ret.toVariant()));
+        QV4::Scoped<QV4::QObjectWrapper> qobjectWrapper(scope, rv);
+        if (!!qobjectWrapper) {
+            if (QObject *object = qobjectWrapper->object())
+                QQmlData::get(object, true)->setImplicitDestructible();
+        }
+        return rv->asReturnedValue();
+    }
 }

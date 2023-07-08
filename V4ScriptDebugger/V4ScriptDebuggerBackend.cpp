@@ -36,6 +36,7 @@
 #include <private/qv4string_p.h>
 #include <private/qqmlbuiltinfunctions_p.h>
 #include <private/qqmldebugservice_p.h>
+#include <private/qv4runtime_p.h>
 
 #include "V4DebugAgent.h"
 #include "V4DebugHandler.h"
@@ -717,10 +718,19 @@ void CV4ScriptDebuggerBackend::debuggerPaused(CV4DebugAgent* debugger, int reaso
 	Attributes["fileName"] = QUrl(fileName).fileName();
 	Attributes["lineNumber"] = lineNumber;
 	Attributes["columnNumber"] = 0; // todo
-	if (reason == CV4DebugAgent::Exception) {
-		Attributes["message"] = d->engine->self()->handle()->exceptionValue->toQStringNoThrow();
-		Attributes["value"] = d->engine->self()->toScriptValue(d->engine->self()->handle()->exceptionValue).toVariant();
-		Attributes["hasExceptionHandler"] = false; // todo
+	if (reason == CV4DebugAgent::Exception) 
+	{
+		QV4::Scope scope(d->debugger->engine());
+		QV4::ScopedValue ex(scope);
+		quint8 hadException = scope.engine->hasException;
+		scope.engine->hasException = false;
+		QV4::ScopedValue prim(scope, QV4::RuntimeHelpers::toPrimitive(scope.engine->exceptionValue->asReturnedValue(), QV4::STRING_HINT));
+		scope.engine->hasException = hadException;
+        if (prim->isPrimitive())
+            Attributes["message"] = prim->toQStringNoThrow();
+		//Attributes["message"] = scope.engine->exceptionValue->toQStringNoThrow(); // warning this clears the exception
+		Attributes["value"] = d->engine->self()->toScriptValue(scope.engine->exceptionValue).toVariant();
+		Attributes["hasExceptionHandler"] = true; // todo
 	}
 	Event["attributes"] = Attributes;
 

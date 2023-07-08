@@ -702,10 +702,6 @@ void CV4ScriptDebuggerBackend::debuggerPaused(CV4DebugAgent* debugger, int reaso
 
 	Q_ASSERT(debugger == d->debugger);
 
-	int line = 0;
-	if(debugger->engine()->currentStackFrame)
-		line = debugger->engine()->currentStackFrame->lineNumber();
-
 	QVariantMap Event;
 	switch (reason)
 	{

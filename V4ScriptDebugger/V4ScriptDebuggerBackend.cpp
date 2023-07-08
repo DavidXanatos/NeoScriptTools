@@ -721,6 +721,11 @@ void CV4ScriptDebuggerBackend::debuggerPaused(CV4DebugAgent* debugger, int reaso
 	Attributes["fileName"] = QUrl(fileName).fileName();
 	Attributes["lineNumber"] = lineNumber;
 	Attributes["columnNumber"] = 0; // todo
+	if (reason == CV4DebugAgent::Exception) {
+		Attributes["message"] = d->engine->self()->handle()->exceptionValue->toQStringNoThrow();
+		Attributes["value"] = d->engine->self()->toScriptValue(d->engine->self()->handle()->exceptionValue).toVariant();
+		Attributes["hasExceptionHandler"] = false; // todo
+	}
 	Event["attributes"] = Attributes;
 
 	d->pendingEvents.append(Event);

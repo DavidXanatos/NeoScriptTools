@@ -52,7 +52,7 @@ public:
     CV4GetPropsJob(CV4DebugHandler* handler, UV4Handle handle);
     void run() override;
 
-    bool wasSuccessful() const { success; }
+    bool wasSuccessful() const { return success; }
     const SV4Object& returnValue() const { return result; }
 };
 
@@ -72,7 +72,7 @@ public:
     CV4SetValueJob(CV4DebugHandler* handler, UV4Handle handle, const QString& name, const SV4Value& value);
     void run() override;
 
-    bool wasSuccessful() const { success; }
+    bool wasSuccessful() const { return success; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
